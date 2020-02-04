@@ -23,14 +23,9 @@ class WideResNet:
         self._use_bias = False
         self._weight_init = "he_normal"
 
-        if K.image_dim_ordering() == "th":
-            logging.debug("image_dim_ordering = 'th'")
-            self._channel_axis = 1
-            self._input_shape = (3, image_size, image_size)
-        else:
-            logging.debug("image_dim_ordering = 'tf'")
-            self._channel_axis = -1
-            self._input_shape = (image_size, image_size, 3)
+        logging.debug("image_dim_ordering = 'tf'")
+        self._channel_axis = -1
+        self._input_shape = (image_size, image_size, 3)
 
     # Wide residual network http://arxiv.org/abs/1605.07146
     def _wide_basic(self, n_input_plane, n_output_plane, stride):
@@ -140,4 +135,5 @@ class WideResNet:
         model = Model(inputs=inputs, outputs=[predictions_g, predictions_a])
 
         return model
+
 
