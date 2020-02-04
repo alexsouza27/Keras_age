@@ -6,7 +6,7 @@ import os
 from time import sleep
 import numpy as np
 import argparse
-from pathlib import Path
+from glob import glob
 from wide_resnet import WideResNet
 from keras.utils.data_utils import get_file
 
@@ -77,13 +77,15 @@ class FaceCV(object):
 
 
     def predicte_age_from_image(self, image_path):
-	image = cv2.imread(image_path)
-	
-	results = self.model.predict(face_imgs)
-	ages = np.arange(0, 101).reshape(101, 1)
-	predicted_age = results[1].dot(ages).flatten()
-	
-	return predicted_age	
+      image = cv2.imread(image_path)
+      image = cv2.resize(image, (self.face_size, self.face_size))
+      batch = image[np.newaxis, ...]
+
+      results = self.model.predict(batch)
+      ages = np.arange(0, 101).reshape(101, 1)
+      predicted_age = results[1].dot(ages).flatten()
+      
+      return predicted_age	
 	
 
     def detect_face(self):
@@ -148,18 +150,18 @@ def main():
     width = args.width
 
     face = FaceCV(depth=depth, width=width)
-    imdb_wiki_test = Path("wiki_imdb/test")
-
+    all_images = glob("wiki_imdb/*.jpg")[:50_000]
     correct_preds = 0
+    
+    for image_path in all_images:
+	    predicted_age = face.predicte_age_from_image(image_path)
+	    real_age = int(os.path.basename(image_path).split("_")[0])
 
-    for image in imdb_wiki_test.glob("*.jpg"):
-	predicted_age = face.predicte_age_from_image(image.absolute())
- 	real_age = image.name.split("_")[0]
+	    age_range = range(real_age - 2, real_age + 3)
+	    correct_preds += int(predicted_age in age_range)
 
-	age_range = range(real_age - 2, real_age + 3)
-	correct_preds += int(predicted_age in age_range)
-
-    print(correct_preds / len(list(imdb_wiki_test.glob("*.jpg"))) * 100)
+    print((correct_preds / 50_000) * 100)
 
 if __name__ == "__main__":
     main()
+
