@@ -76,7 +76,7 @@ class FaceCV(object):
         return resized_img, (x_a, y_a, x_b - x_a, y_b - y_a)
 
 
-    def predicte_age_from_image(self, image_path):
+    def predict_age_from_image(self, image_path):
       image = cv2.imread(image_path)
       image = cv2.resize(image, (self.face_size, self.face_size))
       batch = image[np.newaxis, ...]
@@ -154,7 +154,7 @@ def main():
     correct_preds = 0
     
     for i, image_path in enumerate(all_images):
-	    predicted_age = face.predicte_age_from_image(image_path)
+	    predicted_age = face.predict_age_from_image(image_path)
 	    real_age = int(os.path.basename(image_path).split("_")[0])
 
 	    age_range = range(real_age - 2, real_age + 3)
