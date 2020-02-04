@@ -153,22 +153,15 @@ def main():
     all_images = glob("wiki_imdb/*.jpg")[:50_000]
     correct_preds = 0
     
-<<<<<<< HEAD
     for i, image_path in enumerate(all_images):
-=======
-    for image_path in all_images:
->>>>>>> d427b54e25bded13eae0cb5af78668111383942d
 	    predicted_age = face.predicte_age_from_image(image_path)
 	    real_age = int(os.path.basename(image_path).split("_")[0])
 
 	    age_range = range(real_age - 2, real_age + 3)
 	    correct_preds += int(predicted_age in age_range)
 
-<<<<<<< HEAD
 	    if i % 5000 == 0: print(i)
    
-=======
->>>>>>> d427b54e25bded13eae0cb5af78668111383942d
     print((correct_preds / 50_000) * 100)
 
 if __name__ == "__main__":
