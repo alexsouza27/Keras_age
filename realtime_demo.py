@@ -8,7 +8,10 @@ import numpy as np
 import argparse
 from glob import glob
 from wide_resnet import WideResNet
+
 from keras.utils.data_utils import get_file
+#from generator import ValidGenerator
+
 
 class FaceCV(object):
     """
@@ -150,20 +153,38 @@ def main():
     width = args.width
 
     face = FaceCV(depth=depth, width=width)
+    
     all_images = glob("wiki_imdb/*.jpg")[:50_000]
+
     correct_preds = 0
+
+    preds = []
+    gt = []
+
+    # valid_generator = ValidGenerator(all_images)
+    # face.model.predict_generator()
     
     for i, image_path in enumerate(all_images):
 	    predicted_age = face.predict_age_from_image(image_path)
 	    real_age = int(os.path.basename(image_path).split("_")[0])
+	    
+	    preds.append(predicted_age)
+	    gt.append(real_age)
 
 	    age_range = range(real_age - 2, real_age + 3)
 	    correct_preds += int(predicted_age in age_range)
 
-	    if i % 5000 == 0: print(i)
+	    if i % 1000 == 0: print(i)
    
-    print((correct_preds / 50_000) * 100)
+    acc = (correct_preds / len(all_images)) * 100
+    
+    preds = np.array(preds)
+    gt = np.array(gt)
+    mae = np.abs(preds - gt).mean()
+
+    print(f'Acc {acc} MAE: {mae}')
 
 if __name__ == "__main__":
     main()
+
 
