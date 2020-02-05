@@ -86,7 +86,7 @@ class FaceCV(object):
 
       results = self.model.predict(batch)
       ages = np.arange(0, 101).reshape(101, 1)
-      predicted_age = results[1].dot(ages).flatten()
+      predicted_age = results[1].dot(ages).item()
       
       return predicted_age	
 	
@@ -154,7 +154,7 @@ def main():
 
     face = FaceCV(depth=depth, width=width)
     
-    all_images = glob("wiki_imdb/*.jpg")[:50_000]
+    all_images = glob("wiki_imdb/*.jpg")[:25_000]
 
     correct_preds = 0
 
@@ -164,8 +164,8 @@ def main():
     # valid_generator = ValidGenerator(all_images)
     # face.model.predict_generator()
     
-    for i, image_path in enumerate(all_images):
-	    predicted_age = face.predict_age_from_image(image_path)
+    for i, image_path in enumerate(1, all_images):
+	    predicted_age = int(face.predict_age_from_image(image_path))
 	    real_age = int(os.path.basename(image_path).split("_")[0])
 	    
 	    preds.append(predicted_age)
@@ -174,17 +174,17 @@ def main():
 	    age_range = range(real_age - 2, real_age + 3)
 	    correct_preds += int(predicted_age in age_range)
 
-	    if i % 1000 == 0: print(i)
-   
-    acc = (correct_preds / len(all_images)) * 100
-    
-    preds = np.array(preds)
-    gt = np.array(gt)
-    mae = np.abs(preds - gt).mean()
+	    if i % 1000 == 0:
+            	acc = (correct_preds / i) * 100
 
-    print(f'Acc {acc} MAE: {mae}')
+            	preds_array = np.array(preds)
+            	gt_array = np.array(gt)
+            	mae = np.abs(preds_array - gt_array).mean()
+            
+            	print(f"Iteration: {i} Acc: {acc} MAE: {mae}")
 
 if __name__ == "__main__":
     main()
+
 
 

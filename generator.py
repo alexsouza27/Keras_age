@@ -22,4 +22,4 @@ class ValidGenerator(Sequence):
       x[i] = cv2.resize(image, (self.image_size, self.image_size))
       y[i] = int(age)
 
-    return x, to_categorical(y, 101)
+    return x
